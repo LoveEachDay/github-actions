@@ -48,8 +48,8 @@ jobs:
 
     - name: tag a new version
       run: |
-        git tag v0.0.11
-        git push origin v0.0.11
+        git tag v0.0.12
+        git push origin v0.0.12
 
 
     - name: Set release commit and date env
@@ -61,8 +61,9 @@ jobs:
         echo "releaseDate=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
         maxAge=$(date -d '24 hour ago' +'%s')
         echo $maxAge
+        git log --no-pager 
         git rev-list --abbrev-commit --max-age=${maxAge} --reverse --pretty=oneline HEAD
-        changes=$(git rev-list --abbrev-commit --max-age=${maxAge} --reverse --pretty=oneline HEAD)
+        changes="$(git rev-list --abbrev-commit --max-age=${maxAge} --reverse --pretty=oneline HEAD)"
         echo $changes
         echo "changes=${changes}" >> $GITHUB_ENV
 
@@ -72,7 +73,7 @@ jobs:
         body: "Milvus-2.0.0-testing-build\n\nRelease date: ${{ env.releaseDate }}\n\nImage: milvusdb/milvus-nightly:${{ env.tag }}\n\nChanges:\n${{ env.changes }}"
         token: ${{ secrets.REPO_TOKEN }}
         prerelease: true
-        tag: "v0.0.11"
+        tag: "v0.0.12"
         name: "milvus-2.0.0-testing-build-${{ env.date }}"
 
 
