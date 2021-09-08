@@ -1,0 +1,43 @@
+name: Daily Release
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    #         ┌───────────── minute (0 - 59)
+    #         │ ┌───────────── hour (0 - 23)
+    #         │ │ ┌───────────── day of the month (1 - 31)
+    #         │ │ │ ┌───────────── month (1 - 12 or JAN-DEC)
+    #         │ │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
+    #         │ │ │ │ │
+    #         │ │ │ │ │
+    #         │ │ │ │ │
+    - cron:  '*/10 * * * *'
+
+jobs:
+  nightly:
+    name: Run Daily Release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+    env:
+      IMAGE_REPO: "milvusdb"
+      DEV: "milvus-dev"
+      PROD: "milvus"
+      TAG_PREFIX: "master-"
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get the latest of Milvus dev image tag
+      shell: bash
+      id: extracter
+      working-directory: ci/scripts
+      run: echo "::set-output name=tag::$(./docker_image_find_tag.sh -n ${IMAGE_REPO}/${DEV} -t ${TAG_PREFIX}latest -f ${TAG_PREFIX} -F -L -q)"
+
+    - name: Pull latest milvus-dev image with tag prefix master-
+      run: |
+        IMAGE_TAG=${{ steps.extracter.outputs.tag }}
+        PROD_IMAGE_TAG="v${IMAGE_TAG}"
+        docker pull "${IMAGE_REPO}/${DEV}:${IMAGE_TAG}"
+        docker tag "${IMAGE_REPO}/${DEV}:${IMAGE_TAG}" "${IMAGE_REPO}/${PROD}:${PROD_IMAGE_TAG}"
+
+
