@@ -37,8 +37,11 @@ jobs:
     - name: Pull latest milvus-dev image with tag prefix master-
       run: |
         IMAGE_TAG=${{ steps.extracter.outputs.tag }}
-        PROD_IMAGE_TAG="v${IMAGE_TAG}"
+        echo "pull milvus image"
         docker pull "${IMAGE_REPO}/${DEV}:${IMAGE_TAG}"
-        docker tag "${IMAGE_REPO}/${DEV}:${IMAGE_TAG}" "${IMAGE_REPO}/${PROD}:${PROD_IMAGE_TAG}"
+        echo "retag to prod repo"
+        docker tag "${IMAGE_REPO}/${DEV}:${IMAGE_TAG}" "${IMAGE_REPO}/${PROD}:${IMAGE_TAG}"
+        echo "list images"
+        docker images
 
 
