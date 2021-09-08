@@ -23,7 +23,7 @@ jobs:
     env:
       IMAGE_REPO: "milvusdb"
       DEV: "milvus-dev"
-      PROD: "milvus"
+      DAILY: "milvus-nightly"
       TAG_PREFIX: "master-"
     steps:
     - uses: actions/checkout@v2
@@ -38,7 +38,7 @@ jobs:
       run: |
         IMAGE_TAG=${{ steps.extracter.outputs.tag }}
         docker pull "${IMAGE_REPO}/${DEV}:${IMAGE_TAG}"
-        docker tag "${IMAGE_REPO}/${DEV}:${IMAGE_TAG}" "${IMAGE_REPO}/${PROD}:${IMAGE_TAG}"
+        docker tag "${IMAGE_REPO}/${DEV}:${IMAGE_TAG}" "${IMAGE_REPO}/${DAILY}:${IMAGE_TAG}"
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v1
@@ -49,7 +49,13 @@ jobs:
     - name: Push Docker image
       run: |
         IMAGE_TAG=${{ steps.extracter.outputs.tag }}
-        docker push "${IMAGE_REPO}/${PROD}:${IMAGE_TAG}"
+        docker push "${IMAGE_REPO}/${DAILY}:${IMAGE_TAG}"
+
+    - name: Create a daily release
+      uses: ncipollo/release-action@v1
+      with:
+        body: "Milvus-2.0.0-testing-build\n\nRelease date: `date`\n\nImage: ${IMAGE_REPO}/${DAILY}:${{ steps.extracter.outputs.tag }}\n\nChanges:\n``git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse  --pretty=oneline HEAD"
+        token: ${{ secrets.REPO_TOKEN }}
 
 
 
