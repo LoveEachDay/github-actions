@@ -37,9 +37,9 @@ jobs:
       shell: bash
       run: |
         tag=${{ env.tag }}
-        tagSplit=(${tag//-/})
-        echo "date=${tagSplit[1]}" >> $GITHUB_ENV
-        echo "sha=${tagSplit[2]}" >> $GITHUB_ENV
+        IFS=- read branch date sha <<< "$tag"
+        echo "date=$date" >> $GITHUB_ENV
+        echo "sha=$sha" >> $GITHUB_ENV
 
 
     - name: Pull latest milvus-dev image with tag prefix master-
