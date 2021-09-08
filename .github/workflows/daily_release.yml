@@ -67,6 +67,7 @@ jobs:
         prerelease: true
         commit: ${{ env.localSha }}
         tag: ${{ env.date }}
+        tag_name: ${{ env.date }}
 
 
 
