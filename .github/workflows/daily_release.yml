@@ -25,7 +25,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-      fetch-depth: 0
+      fetch-depth: '0'
 
 
     - name: Get the latest of Milvus dev image tag
@@ -51,8 +51,8 @@ jobs:
 
     - name: tag a new version
       run: |
-        git tag v0.0.14
-        git push origin v0.0.14
+        git tag v0.0.15
+        git push origin v0.0.15
 
 
     - name: Set release commit and date env
@@ -76,7 +76,7 @@ jobs:
         body: "Milvus-2.0.0-testing-build\n\nRelease date: ${{ env.releaseDate }}\n\nImage: milvusdb/milvus-nightly:${{ env.tag }}\n\nChanges:\n${{ env.changes }}"
         token: ${{ secrets.REPO_TOKEN }}
         prerelease: true
-        tag: "v0.0.14"
+        tag: "v0.0.15"
         name: "milvus-2.0.0-testing-build-${{ env.date }}"
 
 
