@@ -37,11 +37,19 @@ jobs:
     - name: Pull latest milvus-dev image with tag prefix master-
       run: |
         IMAGE_TAG=${{ steps.extracter.outputs.tag }}
-        echo "pull milvus image"
         docker pull "${IMAGE_REPO}/${DEV}:${IMAGE_TAG}"
-        echo "retag to prod repo"
         docker tag "${IMAGE_REPO}/${DEV}:${IMAGE_TAG}" "${IMAGE_REPO}/${PROD}:${IMAGE_TAG}"
-        echo "list images"
-        docker images
+
+     - name: Log in to Docker Hub
+       uses: docker/login-action@v1
+       with:
+         username: ${{ secrets.DOCKERHUB_USERNAME }}
+         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+     - name: Push Docker image
+       run: |
+         IMAGE_TAG=${{ steps.extracter.outputs.tag }}
+         docker push "${IMAGE_REPO}/${PROD}:${IMAGE_TAG}"
+
 
 
