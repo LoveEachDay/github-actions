@@ -23,7 +23,10 @@ jobs:
       DAILY: "milvus-nightly"
       TAG_PREFIX: "master-"
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
+      fetch-depth: 0
+
 
     - name: Get the latest of Milvus dev image tag
       shell: bash
@@ -48,8 +51,8 @@ jobs:
 
     - name: tag a new version
       run: |
-        git tag v0.0.13
-        git push origin v0.0.13
+        git tag v0.0.14
+        git push origin v0.0.14
 
 
     - name: Set release commit and date env
@@ -73,7 +76,7 @@ jobs:
         body: "Milvus-2.0.0-testing-build\n\nRelease date: ${{ env.releaseDate }}\n\nImage: milvusdb/milvus-nightly:${{ env.tag }}\n\nChanges:\n${{ env.changes }}"
         token: ${{ secrets.REPO_TOKEN }}
         prerelease: true
-        tag: "v0.0.13"
+        tag: "v0.0.14"
         name: "milvus-2.0.0-testing-build-${{ env.date }}"
 
 
