@@ -40,6 +40,7 @@ jobs:
         IFS=- read branch date sha <<< "$tag"
         echo "date=$date" >> $GITHUB_ENV
         echo "sha=$sha" >> $GITHUB_ENV
+        echo "localSha=$(git rev-list -n 1 --abbrev-commit HEAD)" >> $GITHUB_ENV
 
 
     - name: Pull latest milvus-dev image with tag prefix master-
@@ -64,7 +65,7 @@ jobs:
         body: "Milvus-2.0.0-testing-build\n\nRelease date: `date`\n\nImage: ${IMAGE_REPO}/${DAILY}:${{ steps.extracter.outputs.tag }}\n\nChanges:\n`git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse  --pretty=oneline HEAD`"
         token: ${{ secrets.REPO_TOKEN }}
         prerelease: true
-        commit: ${{ env.sha }}
+        commit: ${{ env.localSha }}
         tag: ${{ env.date }}
 
 
