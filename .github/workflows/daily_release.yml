@@ -51,11 +51,19 @@ jobs:
         IMAGE_TAG=${{ steps.extracter.outputs.tag }}
         docker push "${IMAGE_REPO}/${DAILY}:${IMAGE_TAG}"
 
+    - name: Fetch commit hash
+      shell: bash
+      id: commit-hash
+      run: echo "::set-output name=sha::$(git rev-list -n 1 --abbrev-commit HEAD)"
+
     - name: Create a daily release
       uses: ncipollo/release-action@v1
       with:
         body: "Milvus-2.0.0-testing-build\n\nRelease date: `date`\n\nImage: ${IMAGE_REPO}/${DAILY}:${{ steps.extracter.outputs.tag }}\n\nChanges:\n`git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse  --pretty=oneline HEAD`"
         token: ${{ secrets.REPO_TOKEN }}
+        prerelease: true
+        commit: ${{ steps.commit-hash.outputs.sha}}
+        tag: `date`
 
 
 
