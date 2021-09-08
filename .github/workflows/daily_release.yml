@@ -48,8 +48,8 @@ jobs:
 
     - name: tag a new version
       run: |
-        git tag v0.0.9
-        git push origin v0.0.9
+        git tag v0.0.10
+        git push origin v0.0.10
 
 
     - name: Set release commit and date env
@@ -59,8 +59,8 @@ jobs:
         IFS=- read branch date sha <<< "$tag"
         echo "date=v2.0.0-alpha$date" >> $GITHUB_ENV
         echo "releaseDate=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-        git rev-list --abbrev-commit --max-age=`date -d '24 hours ago' +'%s'` --reverse --pretty=oneline HEAD
-        changes=$(git rev-list --abbrev-commit --max-age=`date -d '24 hours ago' +'%s'` --reverse --pretty=oneline HEAD)
+        git rev-list --abbrev-commit --max-age=`date -d '24 hour ago' +'%s'` --reverse --pretty=oneline HEAD
+        changes=$(git rev-list --abbrev-commit --max-age=`date -d '24 hour ago' +'%s'` --reverse --pretty=oneline HEAD)
         echo $changes
         echo "changes=${changes}" >> $GITHUB_ENV
 
@@ -70,7 +70,7 @@ jobs:
         body: "Milvus-2.0.0-testing-build\n\nRelease date: ${{ env.releaseDate }}\n\nImage: milvusdb/milvus-nightly:${{ env.tag }}\n\nChanges:\n${{ env.changes }}"
         token: ${{ secrets.REPO_TOKEN }}
         prerelease: true
-        tag: "v0.0.9"
+        tag: "v0.0.10"
         name: "milvus-2.0.0-testing-build-${{ env.date }}"
 
 
