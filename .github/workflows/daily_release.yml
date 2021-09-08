@@ -1,6 +1,8 @@
 name: Daily Release
 on:
   push:
+    tags:
+      - 'v*'
   #schedule:
   #  # * is a special character in YAML so you have to quote this string
   #  #         ┌───────────── minute (0 - 59)
@@ -17,9 +19,6 @@ jobs:
   nightly:
     name: Run Daily Release
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.7]
     env:
       IMAGE_REPO: "milvusdb"
       DEV: "milvus-dev"
@@ -32,15 +31,6 @@ jobs:
       shell: bash
       working-directory: ci/scripts
       run: echo "tag=$(./docker_image_find_tag.sh -n ${IMAGE_REPO}/${DEV} -t ${TAG_PREFIX}latest -f ${TAG_PREFIX} -F -L -q)" >> $GITHUB_ENV
-
-    - name: Set release commit and date env
-      shell: bash
-      run: |
-        tag=${{ env.tag }}
-        IFS=- read branch date sha <<< "$tag"
-        echo "date=v2.0.0-alpha$date" >> $GITHUB_ENV
-        echo "sha=$sha" >> $GITHUB_ENV
-        echo "localSha=$(git rev-list -n 1 --abbrev-commit HEAD)" >> $GITHUB_ENV
 
 
     - name: Pull latest milvus-dev image with tag prefix master-
@@ -58,14 +48,27 @@ jobs:
       run: |
         docker push "${IMAGE_REPO}/${DAILY}:${{ env.tag }}"
 
+    - name: tag a new version
+      run: git tag v0.0.2
+
+    - name: Set release commit and date env
+      shell: bash
+      run: |
+        tag=${{ env.tag }}
+        IFS=- read branch date sha <<< "$tag"
+        echo "date=v2.0.0-alpha$date" >> $GITHUB_ENV
+        echo "sha=$sha" >> $GITHUB_ENV
+        echo "localSha=$(git rev-list -n 1 --abbrev-commit HEAD)" >> $GITHUB_ENV
+        echo "releaseDate=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+        echo "changes=$(git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse --pretty=oneline HEAD)" >> $GITHUB_ENV
 
     - name: Create a daily release
       uses: ncipollo/release-action@v1
       with:
-        body: "Milvus-2.0.0-testing-build\n\nRelease date: `date`\n\nImage: ${IMAGE_REPO}/${DAILY}:${{ steps.extracter.outputs.tag }}\n\nChanges:\n`git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse  --pretty=oneline HEAD`"
+        body: "Milvus-2.0.0-testing-build\n\nRelease date: {{ env.releaseDate }}\n\nImage: milvusdb/milvus-nightly:${{ env.tag }}\n\nChanges:\n${{ env.changes }}"
         token: ${{ secrets.REPO_TOKEN }}
         prerelease: true
-        tag: "v0.0.1"
+        tag: "v0.0.2"
         name: "milvus-2.0.0-testing-build-${{ env.date }}"
 
 
