@@ -48,8 +48,8 @@ jobs:
 
     - name: tag a new version
       run: |
-        git tag v0.0.5
-        git push origin v0.0.5
+        git tag v0.0.6
+        git push origin v0.0.6
 
 
     - name: Set release commit and date env
@@ -60,7 +60,8 @@ jobs:
         echo "date=v2.0.0-alpha$date" >> $GITHUB_ENV
         echo "releaseDate=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
         maxAge=$(date -d '24 hours ago' +'%s')
-        echo "changes=$(git rev-list --abbrev-commit --max-age=${maxAge} --reverse --pretty=oneline HEAD)" >> $GITHUB_ENV
+        echo "maxAge is ${maxAge}"
+        echo "changes=$(git rev-list --abbrev-commit --max-age=`date -d '24 hours ago' +'%s'` --reverse --pretty=oneline HEAD)" >> $GITHUB_ENV
 
     - name: Create a daily release
       uses: ncipollo/release-action@v1
@@ -68,7 +69,7 @@ jobs:
         body: "Milvus-2.0.0-testing-build\n\nRelease date: ${{ env.releaseDate }}\n\nImage: milvusdb/milvus-nightly:${{ env.tag }}\n\nChanges:\n${{ env.changes }}"
         token: ${{ secrets.REPO_TOKEN }}
         prerelease: true
-        tag: "v0.0.5"
+        tag: "v0.0.6"
         name: "milvus-2.0.0-testing-build-${{ env.date }}"
 
 
