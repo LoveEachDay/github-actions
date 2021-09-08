@@ -38,7 +38,7 @@ jobs:
       run: |
         tag=${{ env.tag }}
         IFS=- read branch date sha <<< "$tag"
-        echo "date=v2.0.0-alpha-$date" >> $GITHUB_ENV
+        echo "date=v2.0.0-alpha$date" >> $GITHUB_ENV
         echo "sha=$sha" >> $GITHUB_ENV
         echo "localSha=$(git rev-list -n 1 --abbrev-commit HEAD)" >> $GITHUB_ENV
 
