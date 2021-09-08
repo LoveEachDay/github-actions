@@ -55,7 +55,7 @@ jobs:
 
     - name: Push Docker image
       run: |
-        docker push "${IMAGE_REPO}/${DAILY}:${{ .env.tag }}"
+        docker push "${IMAGE_REPO}/${DAILY}:${{ env.tag }}"
 
 
     - name: Create a daily release
@@ -64,7 +64,7 @@ jobs:
         body: "Milvus-2.0.0-testing-build\n\nRelease date: `date`\n\nImage: ${IMAGE_REPO}/${DAILY}:${{ steps.extracter.outputs.tag }}\n\nChanges:\n`git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse  --pretty=oneline HEAD`"
         token: ${{ secrets.REPO_TOKEN }}
         prerelease: true
-        commit: ${{ env.sha}}
+        commit: ${{ env.sha }}
         tag: ${{ env.date }}
 
 
