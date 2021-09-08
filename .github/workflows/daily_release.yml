@@ -65,7 +65,6 @@ jobs:
         body: "Milvus-2.0.0-testing-build\n\nRelease date: `date`\n\nImage: ${IMAGE_REPO}/${DAILY}:${{ steps.extracter.outputs.tag }}\n\nChanges:\n`git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse  --pretty=oneline HEAD`"
         token: ${{ secrets.REPO_TOKEN }}
         prerelease: true
-        commit: ${{ env.localSha }}
         tag: "v0.0.1"
         name: "milvus-2.0.0-testing-build-${{ env.date }}"
 
