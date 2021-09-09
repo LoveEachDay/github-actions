@@ -63,10 +63,21 @@ jobs:
         IFS=- read branch date sha <<< "$tag"
         echo "build=$date" >> $GITHUB_ENV
         echo "releaseDate=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+        #changes="$(git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse --pretty=oneline HEAD)"
+        #echo "changes<<EOF" >> $GITHUB_ENV
+        #echo "$changes" >> $GITHUB_ENV
+        #echo "EOF" >> $GITHUB_ENV
+
+    - name: Write release notes
+      shell: bash
+      run: |
+        echo  "Milvus-2.0.0-testing-build" >> notes.md
+        echo "Relase date: ${{ env.releaseDate }}" >> notes.md
+        echo "Image: milvusdb/milvus-nightly:${{ env.tag }}" >> notes.md
+        echo "Changes: " >> notes.md
         changes="$(git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse --pretty=oneline HEAD)"
-        echo "changes<<EOF" >> $GITHUB_ENV
-        echo "$changes" >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
+        echo $changes >> notes.md
+
 
         #- name: Fetch latest 24 hours commit log
         #  shell: bash
@@ -87,8 +98,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        body: "Milvus-2.0.0-testing-build\n\nRelease date: ${{ env.releaseDate }}\n\nImage: milvusdb/milvus-nightly:${{ env.tag }}\n\nChanges:\n${{ env.changes }}"
+        body_path: "./notes.md"
         prerelease: true
-        tag_name: "v0.0.21"
+        tag_name: "v0.0.22"
 
 
