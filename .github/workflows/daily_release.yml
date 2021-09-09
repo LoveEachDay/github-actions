@@ -63,11 +63,12 @@ jobs:
         IFS=- read branch date sha <<< "$tag"
         echo "build=$date" >> $GITHUB_ENV
         echo "releaseDate=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+        git --no-pager log
 
     - name: Fetch latest 24 hours commit log
       shell: bash
       id: commitLog
-      run: echo "::set-output name=changes::$(git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse --pretty=oneline HEAD)"
+      run: echo "::set-output name=changes::'$(git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse --pretty=oneline HEAD)'"
 
     - name: Create a daily release
       uses: ncipollo/release-action@v1
