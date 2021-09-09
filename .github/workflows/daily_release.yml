@@ -52,8 +52,8 @@ jobs:
 
     - name: tag a new version
       run: |
-        git tag v0.0.18
-        git push origin v0.0.18
+        git tag v0.0.19
+        git push origin v0.0.19
 
 
     - name: Set release commit and date env
@@ -76,7 +76,7 @@ jobs:
         body: "Milvus-2.0.0-testing-build\n\nRelease date: ${{ env.releaseDate }}\n\nImage: milvusdb/milvus-nightly:${{ env.tag }}\n\nChanges:\n${{ steps.commitLog.outputs.changes }}"
         token: ${{ secrets.REPO_TOKEN }}
         prerelease: true
-        tag: "v0.0.18"
+        tag: "v0.0.19"
         name: "milvus-2.0.0-testing-build-${{ env.build }}"
 
 
