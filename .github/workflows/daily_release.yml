@@ -75,8 +75,10 @@ jobs:
         echo "Relase date: ${{ env.releaseDate }}" >> notes.md
         echo "Image: milvusdb/milvus-nightly:${{ env.tag }}" >> notes.md
         echo "Changes: " >> notes.md
-        changes="$(git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse --pretty=oneline HEAD)"
-        echo $changes >> notes.md
+        $(git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse --pretty=oneline HEAD) | 
+        while IFS= read -r line; do
+          echo "$line" >> notes.md
+        done
 
 
         #- name: Fetch latest 24 hours commit log
@@ -100,6 +102,6 @@ jobs:
       with:
         body_path: "./notes.md"
         prerelease: true
-        tag_name: "v0.0.22"
+        tag_name: "v0.0.23"
 
 
