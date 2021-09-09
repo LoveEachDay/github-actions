@@ -35,25 +35,25 @@ jobs:
       run: echo "tag=$(./docker_image_find_tag.sh -n ${IMAGE_REPO}/${DEV} -t ${TAG_PREFIX}latest -f ${TAG_PREFIX} -F -L -q)" >> $GITHUB_ENV
 
 
-    - name: Pull latest milvus-dev image with tag prefix master-
-      run: |
-        docker pull "${IMAGE_REPO}/${DEV}:${{ env.tag }}"
-        docker tag "${IMAGE_REPO}/${DEV}:${{ env.tag }}" "${IMAGE_REPO}/${DAILY}:${{ env.tag }}"
+        #- name: Pull latest milvus-dev image with tag prefix master-
+        #  run: |
+        #    docker pull "${IMAGE_REPO}/${DEV}:${{ env.tag }}"
+        #    docker tag "${IMAGE_REPO}/${DEV}:${{ env.tag }}" "${IMAGE_REPO}/${DAILY}:${{ env.tag }}"
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        #- name: Log in to Docker Hub
+        #  uses: docker/login-action@v1
+        #  with:
+        #    username: ${{ secrets.DOCKERHUB_USERNAME }}
+        #    password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    - name: Push Docker image
-      run: |
-        docker push "${IMAGE_REPO}/${DAILY}:${{ env.tag }}"
+        #- name: Push Docker image
+        #  run: |
+        #    docker push "${IMAGE_REPO}/${DAILY}:${{ env.tag }}"
 
     - name: tag a new version
       run: |
-        git tag v0.0.17
-        git push origin v0.0.17
+        git tag v0.0.18
+        git push origin v0.0.18
 
 
     - name: Set release commit and date env
@@ -61,19 +61,21 @@ jobs:
       run: |
         tag=${{ env.tag }}
         IFS=- read branch date sha <<< "$tag"
-        echo "date=v2.0.0-alpha$date" >> $GITHUB_ENV
+        echo "build=$date" >> $GITHUB_ENV
         echo "releaseDate=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-        changes="$(git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse --pretty=oneline HEAD)"
-        echo $changes
-        echo "changes=${changes}" >> $GITHUB_ENV
+
+    - name: Fetch latest 24 hours commit log
+      shell: bash
+      id: commitLog
+      run: echo "::set-output name=changes::$(git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse --pretty=oneline HEAD)"
 
     - name: Create a daily release
       uses: ncipollo/release-action@v1
       with:
-        body: "Milvus-2.0.0-testing-build\n\nRelease date: ${{ env.releaseDate }}\n\nImage: milvusdb/milvus-nightly:${{ env.tag }}\n\nChanges:\n${{ env.changes }}"
+        body: "Milvus-2.0.0-testing-build\n\nRelease date: ${{ env.releaseDate }}\n\nImage: milvusdb/milvus-nightly:${{ env.tag }}\n\nChanges:\n${{ steps.commitLog.outputs.changes }}"
         token: ${{ secrets.REPO_TOKEN }}
         prerelease: true
-        tag: "v0.0.17"
-        name: "milvus-2.0.0-testing-build-${{ env.date }}"
+        tag: "v0.0.18"
+        name: "milvus-2.0.0-testing-build-${{ env.build }}"
 
 
