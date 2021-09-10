@@ -102,7 +102,8 @@ jobs:
       with:
         body: "Image: ${{ env.IMAGE_REPO}}/${{ env.DAILY }}:${{ env.tag }}"
         prerelease: true
-        tag_name: "v0.0.25"
+        tag_name: "v0.0.26"
         release_name: "Milvus-2.0.0-testing-${{env.build}}"
+        commitish: "ea07ee50acaa6fec67587914fc0eba1e1a1f291e"
 
 
