@@ -62,7 +62,7 @@ jobs:
         tag=${{ env.tag }}
         IFS=- read branch date sha <<< "$tag"
         echo "build=$date" >> $GITHUB_ENV
-        echo "sha=$sha" >> $GITHUB_ENV
+        echo "sha=${git rev-parse 1497e4c}" >> $GITHUB_ENV
         echo "releaseDate=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
         #changes="$(git rev-list --abbrev-commit --max-age=$(date -d '24 hour ago' +'%s') --reverse --pretty=oneline HEAD)"
         #echo "changes<<EOF" >> $GITHUB_ENV
@@ -104,6 +104,6 @@ jobs:
         prerelease: true
         tag_name: "v0.0.26"
         release_name: "Milvus-2.0.0-testing-${{env.build}}"
-        commitish: "ea07ee50acaa6fec67587914fc0eba1e1a1f291e"
+        commitish: "${{ env.sha }}"
 
 
