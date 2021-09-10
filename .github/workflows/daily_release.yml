@@ -104,6 +104,6 @@ jobs:
         prerelease: true
         tag_name: "v0.0.25"
         release_name: "Milvus-2.0.0-testing-${{env.build}}"
-        commitish: ${{ env.sha }}
+        commitish: "1497e4c"
 
 
